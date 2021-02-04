@@ -19,8 +19,6 @@ def get_definitions(page_text):
 
     phrases = []
     for result in results:
-        print(result)
-        print()
         phrase = clean_text(result.find(class_="title").find(text=True))
 
         if phrase == "Found 0 matches":
