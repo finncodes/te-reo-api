@@ -1,8 +1,14 @@
 from flask import Flask, request, Response, jsonify
 from utils.dictionary_parser import make_request, get_definitions
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 
 
 app = Flask(__name__)
+limiter = Limiter(
+    app,
+    key_func=get_remote_address
+)
 
 
 @app.route('/')
@@ -11,6 +17,7 @@ def root():
 
 
 @app.route('/definitions', methods=['GET'])
+@limiter.limit('1/second')
 def definitions():
     keyword = request.args.get("keyword")
 
@@ -24,7 +31,11 @@ def definitions():
     if not defs:
         return Response(status=404)
     else:
-        return jsonify(defs)
+        return jsonify(
+            {
+                "results": defs
+            }
+        )
 
 
 if __name__ == '__main__':
